@@ -29,7 +29,7 @@
 					'theme_location' => 'primary',
 					'menu_class'     => 'menu',
 					'container'      => false,
-					'fallback_cb'    => 'wp_page_menu',
+					'fallback_cb'    => 'arsiv_theme_menu_fallback',
 				)
 			);
 			?>

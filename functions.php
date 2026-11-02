@@ -33,6 +33,35 @@ function arsiv_theme_setup() {
 }
 add_action( 'after_setup_theme', 'arsiv_theme_setup' );
 
+function arsiv_theme_menu_fallback( $args ) {
+	$menu  = '<ul class="menu">';
+	$menu .= '<li class="menu-item"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Ana sayfa', 'arsiv' ) . '</a></li>';
+
+	$posts_page_id = (int) get_option( 'page_for_posts' );
+	if ( $posts_page_id ) {
+		$menu .= '<li class="menu-item"><a href="' . esc_url( get_permalink( $posts_page_id ) ) . '">' . esc_html__( 'Makaleler', 'arsiv' ) . '</a></li>';
+	}
+
+	foreach ( array( 'rss_item', 'music_archive', 'video_archive', 'archived_link' ) as $post_type ) {
+		$archive_url    = get_post_type_archive_link( $post_type );
+		$post_type_object = get_post_type_object( $post_type );
+
+		if ( $archive_url && $post_type_object ) {
+			$menu .= '<li class="menu-item"><a href="' . esc_url( $archive_url ) . '">' . esc_html( $post_type_object->labels->name ) . '</a></li>';
+		}
+	}
+
+	$menu .= wp_list_pages(
+		array(
+			'echo'     => false,
+			'title_li' => '',
+		)
+	);
+	$menu .= '</ul>';
+
+	return $menu;
+}
+
 function arsiv_theme_register_archive_types() {
 	$types = array(
 		'rss_item'     => array(
@@ -57,7 +86,7 @@ function arsiv_theme_register_archive_types() {
 		register_post_type(
 			$type,
 			array(
-				'labels'       => array(
+				'labels'        => array(
 					'name'          => $labels['plural'],
 					'singular_name' => $labels['singular'],
 					'add_new_item'  => sprintf(
@@ -71,12 +100,12 @@ function arsiv_theme_register_archive_types() {
 						$labels['singular']
 					),
 				),
-				'public'       => true,
-				'has_archive'  => true,
-				'show_in_rest' => true,
+				'public'        => true,
+				'has_archive'   => true,
+				'show_in_rest'  => true,
 				'menu_position' => 5,
-				'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
-				'rewrite'      => array( 'slug' => sanitize_title( $labels['plural'] ) ),
+				'supports'      => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+				'rewrite'       => array( 'slug' => sanitize_title( $labels['plural'] ) ),
 			)
 		);
 	}
